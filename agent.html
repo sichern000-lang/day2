@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>제주 축제 에이전트</title>
   <style>
     @font-face {
@@ -19,6 +19,7 @@
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
       display: flex;
@@ -26,6 +27,8 @@
       font-family: 'Escoredream', sans-serif;
       background: #f8f4ee;
       color: #111111;
+      word-break: keep-all;
+      -webkit-tap-highlight-color: transparent;
     }
     header {
       padding: 16px 24px;
@@ -138,7 +141,16 @@
       font-size: 0.72rem;
       opacity: 0.65;
     }
-  </style>
+
+    /* 모바일 (390px 기준) */
+    @media (max-width: 520px) {
+      header, #chat, .suggest, form, .note { padding-left: 16px; padding-right: 16px; }
+      .msg { max-width: 88%; }
+      .suggest button { padding: 8px 12px; }
+      .icon-btn { padding: 0 14px; }
+      .note { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+    }
+    </style>
 </head>
 <body>
   <header>
