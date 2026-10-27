@@ -4,48 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>제주 축제 안내</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-1Thin.woff') format('woff');
+      font-weight: 100;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-2ExtraLight.woff') format('woff');
+      font-weight: 200;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff') format('woff');
+      font-weight: 300;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+      font-weight: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
+      font-weight: 500;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-6Bold.woff') format('woff');
+      font-weight: 600;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-7ExtraBold.woff') format('woff');
+      font-weight: 700;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-8Heavy.woff') format('woff');
+      font-weight: 800;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-9Black.woff') format('woff');
+      font-weight: 900;
+      font-display: swap;
+    }
     * { box-sizing: border-box; }
     body {
-      font-family: 'Asta Sans', sans-serif;
+      font-family: 'Escoredream', sans-serif;
       margin: 0;
-      background: #fcf9ee;
-      color: #1f4d3a;
+      background: #f8f4ee;
+      color: #111111;
     }
     .page {
       min-height: 100vh;
       display: grid;
-      grid-template-rows: auto auto auto auto 1fr auto;
-      grid-template-columns: 2fr 1fr;
+      grid-template-rows: auto auto auto auto auto auto 1fr auto;
+      grid-template-columns: 3fr 2fr;
       grid-template-areas:
         "header  header"
         "nav     nav"
+        "dday    dday"
         "section aside"
         "article aside"
+        "upnext  upnext"
         "images  images"
         "footer  footer";
       gap: 1px;
-      background: #1f4d3a;          /* 칸 사이의 1px 틈이 격자선이 됩니다 */
+      background: #111111;          /* 칸 사이의 1px 틈이 격자선이 됩니다 */
     }
     .page > * {
-      background: #fcf9ee;
-      color: #1f4d3a;
+      background: #f8f4ee;
+      color: #111111;
       border-radius: 0;
-      padding: 16px 20px;
+      padding: 24px 56px;
     }
-    h1, h2, h3 { margin: 0 0 8px; }
+    h1, h2, h3 { margin: 0 0 8px; font-weight: 600; }
     h1 { font-size: 1.5rem; }
-    h2 { font-size: 1.1rem; }
-    h3 { font-size: 1rem; }
+    h2 { font-size: 0.95rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    h3 { font-size: 0.95rem; letter-spacing: 0.08em; text-transform: uppercase; }
     p { margin: 0 0 8px; }
     ul { margin: 0; padding-left: 20px; }
-    li::marker { color: #1f4d3a; }
+    li::marker { color: #111111; }
     li { padding: 3px 0; }
 
-    .page > header { grid-area: header; border-bottom: 4px solid #1f4d3a; }
+    .page > header { grid-area: header; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
     header p { margin: 0; opacity: 0.85; font-size: 0.9rem; }
 
     /* 메인·축제·정보: 블록 없이 하단바가 있는 고스트 버튼 */
@@ -53,26 +108,55 @@
       grid-area: nav;
       display: flex;
       gap: 8px;
-      padding: 0 20px;
-      background: #fcf9ee;
+      padding: 0 56px;
+      background: #f8f4ee;
     }
     nav a {
       flex: 1;
       padding: 10px 0;
       text-align: center;
-      color: #1f4d3a;
+      color: #111111;
       opacity: 0.6;
       text-decoration: none;
       border-bottom: 3px solid transparent;
     }
-    nav a:hover { opacity: 1; border-bottom-color: rgba(31, 77, 58, 0.4); }
-    nav a.active { opacity: 1; font-weight: bold; border-bottom-color: #1f4d3a; }
+    nav a:hover { opacity: 1; border-bottom-color: rgba(17, 17, 17, 0.4); }
+    nav a.active { opacity: 1; font-weight: 600; border-bottom-color: #fff12e; box-shadow: 0 1px 0 #111111; }
+
+    .page > .dday {
+      grid-area: dday;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      background: #d9f44a;
+    }
+    .dday .count { font-size: 2.4rem; line-height: 1; font-weight: 600; }
+    .dday .name { font-size: 1.1rem; font-weight: 600; }
+    .dday .meta { font-size: 0.85rem; }
+    .dday .label { margin-right: auto; font-weight: 700; }
+
+    .page > .upnext { grid-area: upnext; }
+    .upnext ul { list-style: none; padding: 0; margin: 0; }
+    .upnext li {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      padding: 12px 0;
+      border-bottom: 1px solid #111111;
+    }
+    .upnext li:last-child { border-bottom: none; }
+    .upnext .d { flex: 0 0 4.5em; font-size: 1.3rem; font-weight: 600; }
+    .upnext .it { flex: 1; min-width: 0; }
+    .upnext .n { font-weight: 600; }
+    .upnext .m { font-size: 0.85rem; opacity: 0.8; }
+    .upnext .empty { padding: 8px 0; }
 
     section { grid-area: section; }
     article { grid-area: article; }
-    .page > aside { grid-area: aside; background: #f5efdc; }
+    .page > aside { grid-area: aside; background: #8fa5d6; padding-left: 32px; padding-right: 32px; }
     .page > .images { grid-area: images; }
-    .page > footer { grid-area: footer; text-align: center; font-size: 0.85rem; background: #1f4d3a; color: #f3ecd9; }
+    .page > footer { grid-area: footer; display: flex; justify-content: space-between; gap: 16px; background: #fff12e; color: #111111; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 
     /* 이미지 검색 블록 */
     .row { display: flex; gap: 8px; margin-bottom: 8px; }
@@ -81,10 +165,10 @@
       min-width: 0;
       padding: 10px;
       font-size: 1rem;
-      border: 1px solid #1f4d3a;
+      border: 1px solid #111111;
       border-radius: 0;
-      background: #fffdf5;
-      color: #1f4d3a;
+      background: #fffcf6;
+      color: #111111;
       font-family: inherit;
     }
     button {
@@ -93,11 +177,11 @@
       font-family: inherit;
       border: none;
       border-radius: 0;
-      background: #1f4d3a;
-      color: #f3ecd9;
+      background: #fff12e;
+      color: #111111;
       cursor: pointer;
     }
-    button:hover { background: #163a2b; }
+    button:hover { background: #ffe600; }
     button:disabled { opacity: 0.4; cursor: default; }
     .search-box { position: relative; margin-bottom: 8px; }
     .search-box input { width: 100%; padding-right: 44px; }
@@ -110,27 +194,27 @@
       display: flex;
       align-items: center;
       background: transparent;
-      color: #1f4d3a;
+      color: #111111;
     }
-    .icon-btn:hover { background: rgba(31, 77, 58, 0.12); }
+    .icon-btn:hover { background: rgba(17, 17, 17, 0.12); }
     .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
     .chips button {
       padding: 4px 10px;
       font-size: 0.85rem;
       background: transparent;
-      color: #1f4d3a;
-      border: 1px solid #1f4d3a;
+      color: #111111;
+      border: 1px solid #111111;
     }
-    .chips button:hover, .chips button.on { background: #1f4d3a; color: #f3ecd9; }
+    .chips button:hover, .chips button.on { background: #fff12e; color: #111111; }
     .viewer { --vis: 4; position: relative; display: none; margin-bottom: 8px; }
-    .viewport { width: 100%; overflow: hidden; border: 1px solid #1f4d3a; }
+    .viewport { width: 100%; overflow: hidden; border: 1px solid #111111; }
     .track { display: flex; transition: transform 0.3s ease; }
     .track img {
       flex: 0 0 calc(100% / var(--vis));
       min-width: 0;
       aspect-ratio: 4 / 3;
       object-fit: cover;
-      border-right: 1px solid #1f4d3a;
+      border-right: 1px solid #111111;
     }
     /* 이미지 위에 떠 있는 라인 아이콘 화살표 (테두리·배경 없음) */
     .ghost {
@@ -149,8 +233,8 @@
     #next { right: 6px; }
     .ghost:hover { background: transparent; opacity: 0.8; }
     .ghost:disabled { background: transparent; opacity: 0; pointer-events: none; }
-    @media (max-width: 520px) { .viewer { --vis: 2; } }
-    #msg { min-height: 1.4em; color: #a33a2a; font-size: 0.9rem; }
+    @media (max-width: 520px) { .viewer { --vis: 2; } .page > * { padding-left: 24px; padding-right: 24px; } .page > nav { padding: 0 24px; } }
+    #msg { min-height: 1.4em; color: #c0392b; font-size: 0.9rem; }
     .info { display: none; margin-top: 8px; text-align: center; font-size: 0.9rem; }
     .info .row { justify-content: center; margin-top: 8px; }
     .credit { margin: 8px 0 0; font-size: 0.8rem; opacity: 0.8; text-align: center; }
@@ -159,8 +243,8 @@
     @media (max-width: 520px) {
       .page {
         grid-template-columns: 1fr;
-        grid-template-areas: "header" "nav" "section" "article" "aside" "images" "footer";
-        grid-template-rows: auto auto auto auto auto 1fr auto;
+        grid-template-areas: "header" "nav" "dday" "section" "article" "aside" "upnext" "images" "footer";
+        grid-template-rows: auto auto auto auto auto auto auto 1fr auto;
       }
     }
   </style>
@@ -168,8 +252,11 @@
 <body>
   <div class="page">
     <header>
-      <h1>🍊 제주 축제 안내</h1>
-      <p>2026년 하반기 제주도 축제를 알려드립니다</p>
+      <div>
+        <h1>🍊 제주 축제 안내</h1>
+        <p>2026년 하반기 제주도 축제를 알려드립니다</p>
+      </div>
+      <span class="label">2026 H2</span>
     </header>
 
     <nav>
@@ -177,6 +264,15 @@
       <a href="#">축제</a>
       <a href="#">정보</a>
     </nav>
+
+    <div class="dday" id="dday" aria-live="polite">
+      <span class="label">Next Festival</span>
+      <span class="count" id="ddayCount"></span>
+      <div>
+        <div class="name" id="ddayName"></div>
+        <div class="meta" id="ddayMeta"></div>
+      </div>
+    </div>
 
     <section>
       <h2>💬 Ask Me Anything</h2>
@@ -205,6 +301,11 @@
       </ul>
     </aside>
 
+    <div class="upnext">
+      <h2>🗓️ Coming Up Next</h2>
+      <ul id="upnextList"></ul>
+    </div>
+
     <div class="images">
       <h2>🖼️ Image Search</h2>
       <div class="search-box">
@@ -231,7 +332,7 @@
       <p class="credit">Images from <a href="https://pixabay.com" target="_blank" rel="noopener">Pixabay</a></p>
     </div>
 
-    <footer>© 2026 Jihyunkoh</footer>
+    <footer><span>© 2026 Jihyunkoh</span><span>#JejuFestival</span></footer>
   </div>
 
   <script>
@@ -297,6 +398,73 @@
       }
     }
 
+    // 예정된 제주 축제 (날짜는 검색으로 확인한 값이며 변경될 수 있으니 방문 전 공식 안내를 확인하세요)
+    const FESTIVALS = [
+      { name: '제주올레걷기축제', start: '2026-11-05', end: '2026-11-07', place: '조천만세동산' },
+      { name: '대한민국 제주정원문화박람회', start: '2026-11-06', end: '2026-11-10', place: '서귀포 바람모루공원' },
+      { name: '제주감귤박람회', start: '2026-11-19', end: '2026-11-23', place: '서귀포농업기술센터' },
+      { name: '최남단방어축제', start: '2026-11-19', end: '2026-11-22', place: '모슬포항 일원' }
+    ];
+
+    function parseDay(str) {
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    const fmtDay = (str) => str.slice(5).replace('-', '.');
+
+    // Coming Up Next: 가장 가까운 축제 다음으로 다가오는 축제 목록
+    function showUpNext(list, today) {
+      const ul = $('upnextList');
+      if (!list.length) {
+        ul.innerHTML = '<li class="empty">더 이상 예정된 축제가 없습니다.</li>';
+        return;
+      }
+      ul.replaceChildren(...list.map((f) => {
+        const diff = Math.round((parseDay(f.start) - today) / 86400000);
+        const li = document.createElement('li');
+        const d = document.createElement('span');
+        d.className = 'd';
+        d.textContent = diff > 0 ? `D-${diff}` : diff === 0 ? 'D-DAY' : '진행 중';
+        const info = document.createElement('div');
+        info.className = 'it';
+        const n = document.createElement('div');
+        n.className = 'n';
+        n.textContent = f.name;
+        const m = document.createElement('div');
+        m.className = 'm';
+        m.textContent = `${fmtDay(f.start)} – ${fmtDay(f.end)}  ·  ${f.place}`;
+        info.append(n, m);
+        li.append(d, info);
+        return li;
+      }));
+    }
+
+    function showDday() {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      // 끝나지 않은 축제 중 시작일이 가장 빠른 것
+      const upcoming = FESTIVALS
+        .filter((f) => parseDay(f.end) >= today)
+        .sort((a, b) => parseDay(a.start) - parseDay(b.start));
+      const next = upcoming[0];
+      showUpNext(upcoming.slice(1), today);
+
+      if (!next) {
+        $('ddayCount').textContent = '—';
+        $('ddayName').textContent = '예정된 축제가 없습니다';
+        $('ddayMeta').textContent = '';
+        return;
+      }
+      const diff = Math.round((parseDay(next.start) - today) / 86400000);
+      $('ddayCount').textContent = diff > 0 ? `D-${diff}` : 'D-DAY';
+      $('ddayName').textContent = next.name;
+      const fmt = (str) => str.slice(5).replace('-', '.');
+      $('ddayMeta').textContent =
+        `${fmt(next.start)} – ${fmt(next.end)}  ·  ${next.place}` + (diff < 0 ? '  ·  진행 중' : '');
+    }
+    showDday();
+
     // 추천: 제주 축제 관련 이미지 4장을 갤러리로 보여줍니다
     const RECOMMENDED = [
       { label: '제주 축제', q: 'jeju festival' },
@@ -304,7 +472,7 @@
       { label: '오름', q: 'jeju oreum' },
       { label: '감귤', q: 'jeju tangerine' },
       { label: '해녀', q: 'haenyeo' },
-      { label: '돌하르방', q: 'dol hareubang' },
+      { label: '제주도', q: 'jeju island' },
       { label: '불꽃놀이', q: 'fireworks festival' }
     ];
 
