@@ -4,14 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>제주 축제 안내</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     body {
-      font-family: sans-serif;
+      font-family: 'Asta Sans', sans-serif;
       margin: 0;
       padding: 16px;
-      background: #f4f4f8;
-      color: #222;
+      background: #f3ecd9;
+      color: #1f4d3a;
     }
     .page {
       max-width: 720px;
@@ -25,12 +28,14 @@
         "article aside"
         "images  images"
         "footer  footer";
-      gap: 12px;
+      gap: 1px;
+      background: #1f4d3a;          /* 칸 사이의 1px 틈이 격자선이 됩니다 */
+      border: 1px solid #1f4d3a;
     }
     .page > * {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 10px;
+      background: #f8f3e4;
+      color: #1f4d3a;
+      border-radius: 0;
       padding: 16px 20px;
     }
     h1, h2, h3 { margin: 0 0 8px; }
@@ -39,28 +44,37 @@
     h3 { font-size: 1rem; }
     p { margin: 0 0 8px; }
     ul { margin: 0; padding-left: 20px; }
+    li::marker { color: #1f4d3a; }
     li { padding: 3px 0; }
 
-    .page > header { grid-area: header; background: #9234ff; color: #fdfff6; border: none; }
+    .page > header { grid-area: header; border-bottom: 4px solid #1f4d3a; }
     header p { margin: 0; opacity: 0.85; font-size: 0.9rem; }
 
-    nav { grid-area: nav; display: flex; gap: 8px; padding: 8px; }
+    /* 메인·축제·정보: 블록 없이 하단바가 있는 고스트 버튼 */
+    .page > nav {
+      grid-area: nav;
+      display: flex;
+      gap: 8px;
+      padding: 0 20px;
+      background: #f8f3e4;
+    }
     nav a {
       flex: 1;
-      padding: 8px 0;
+      padding: 10px 0;
       text-align: center;
-      color: #555;
+      color: #1f4d3a;
+      opacity: 0.6;
       text-decoration: none;
-      border-radius: 8px;
+      border-bottom: 3px solid transparent;
     }
-    nav a:hover { background: #f4eaff; }
-    nav a.active { color: #9234ff; font-weight: bold; background: #f4eaff; }
+    nav a:hover { opacity: 1; border-bottom-color: rgba(31, 77, 58, 0.4); }
+    nav a.active { opacity: 1; font-weight: bold; border-bottom-color: #1f4d3a; }
 
     section { grid-area: section; }
     article { grid-area: article; }
-    .page > aside { grid-area: aside; background: #faf5ff; }
+    .page > aside { grid-area: aside; background: #ece3cb; }
     .page > .images { grid-area: images; }
-    .page > footer { grid-area: footer; text-align: center; font-size: 0.85rem; color: #777; background: #fafafa; }
+    .page > footer { grid-area: footer; text-align: center; font-size: 0.85rem; background: #1f4d3a; color: #f3ecd9; }
 
     /* 이미지 검색 블록 */
     .row { display: flex; gap: 8px; margin-bottom: 8px; }
@@ -69,25 +83,53 @@
       min-width: 0;
       padding: 10px;
       font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      border: 1px solid #1f4d3a;
+      border-radius: 0;
+      background: #fffdf5;
+      color: #1f4d3a;
+      font-family: inherit;
     }
     button {
       padding: 10px 16px;
       font-size: 1rem;
+      font-family: inherit;
       border: none;
-      border-radius: 8px;
-      background: #9234ff;
-      color: #fff;
+      border-radius: 0;
+      background: #1f4d3a;
+      color: #f3ecd9;
       cursor: pointer;
     }
-    button:hover { background: #7a1fe0; }
-    button:disabled { background: #bbb; cursor: default; }
-    #msg { min-height: 1.4em; color: #c0392b; font-size: 0.9rem; }
+    button:hover { background: #163a2b; }
+    button:disabled { opacity: 0.4; cursor: default; }
+    .search-box { position: relative; margin-bottom: 8px; }
+    .search-box input { width: 100%; padding-right: 44px; }
+    .icon-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      background: transparent;
+      color: #1f4d3a;
+    }
+    .icon-btn:hover { background: rgba(31, 77, 58, 0.12); }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .chips button {
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      background: transparent;
+      color: #1f4d3a;
+      border: 1px solid #1f4d3a;
+    }
+    .chips button:hover, .chips button.on { background: #1f4d3a; color: #f3ecd9; }
+    #msg { min-height: 1.4em; color: #a33a2a; font-size: 0.9rem; }
     .slider {
       position: relative;
       background: #000;
-      border-radius: 12px;
+      border: 1px solid #1f4d3a;
+      border-radius: 0;
       overflow: hidden;
       aspect-ratio: 4 / 3;
       display: none;
@@ -97,14 +139,17 @@
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(31, 77, 58, 0.85);
+      color: #f3ecd9;
       padding: 10px 14px;
     }
+    .slider .nav-btn:hover { background: #1f4d3a; }
     #prev { left: 8px; }
     #next { right: 8px; }
     .info { display: none; margin-top: 8px; text-align: center; font-size: 0.9rem; }
     .info .row { justify-content: center; margin-top: 8px; }
-    .credit { margin: 8px 0 0; font-size: 0.8rem; color: #777; text-align: center; }
+    .credit { margin: 8px 0 0; font-size: 0.8rem; opacity: 0.8; text-align: center; }
+    .credit a { color: inherit; }
 
     @media (max-width: 520px) {
       .page {
@@ -128,7 +173,7 @@
     </nav>
 
     <section>
-      <h2>💬 이런 걸 물어보세요</h2>
+      <h2>💬 Ask Me Anything</h2>
       <ul>
         <li>🏙️ 제주시에서 열리는 축제</li>
         <li>👥 사람이 많이 오는 축제</li>
@@ -137,7 +182,7 @@
     </section>
 
     <article>
-      <h2>🎪 축제 한눈에 보기</h2>
+      <h2>🎪 Festivals at a Glance</h2>
       <p>계절별 날짜 순서로 축제 일정과 행사, 체험 장소를 정리해 드립니다.</p>
       <ul>
         <li>📅 계절·날짜별 행사</li>
@@ -146,7 +191,7 @@
     </article>
 
     <aside>
-      <h3>📊 함께 보면 좋은 정보</h3>
+      <h3>📊 Good to Know</h3>
       <ul>
         <li>👥 작년 방문객 수</li>
         <li>🌤️ 작년 날씨</li>
@@ -155,11 +200,17 @@
     </aside>
 
     <div class="images">
-      <h2>🖼️ 이미지 검색</h2>
-      <div class="row">
+      <h2>🖼️ Image Search</h2>
+      <div class="search-box">
         <input id="query" type="text" placeholder="검색어 (예: 제주, 귤, 오름)">
-        <button id="search">검색</button>
+        <button id="search" class="icon-btn" aria-label="검색">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+          </svg>
+        </button>
       </div>
+      <div class="chips" id="chips" aria-label="추천 검색어"></div>
       <div id="msg"></div>
 
       <div class="slider" id="slider">
@@ -224,7 +275,38 @@
       $('nextPage').disabled = page >= totalPages;
     }
 
-    $('search').addEventListener('click', () => load($('query').value.trim(), 1));
+    // 추천 검색어: 누르면 해당 이미지가 바로 나옵니다. 페이지를 열면 첫 번째가 자동으로 표시됩니다.
+    const RECOMMENDED = [
+      { label: '제주 축제', q: 'jeju festival' },
+      { label: '유채꽃', q: 'jeju canola flower' },
+      { label: '오름', q: 'jeju oreum' },
+      { label: '감귤', q: 'jeju tangerine' },
+      { label: '해녀', q: 'haenyeo' },
+      { label: '돌하르방', q: 'dol hareubang' },
+      { label: '불꽃놀이', q: 'fireworks festival' }
+    ];
+
+    function pick(item) {
+      $('query').value = item.label;
+      document.querySelectorAll('#chips button').forEach((b) => {
+        b.classList.toggle('on', b.textContent === item.label);
+      });
+      load(item.q, 1);
+    }
+
+    RECOMMENDED.forEach((item) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = item.label;
+      b.addEventListener('click', () => pick(item));
+      $('chips').appendChild(b);
+    });
+    pick(RECOMMENDED[0]);
+
+    $('search').addEventListener('click', () => {
+      document.querySelectorAll('#chips button').forEach((b) => b.classList.remove('on'));
+      load($('query').value.trim(), 1);
+    });
     $('query').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('search').click(); });
     $('prev').addEventListener('click', () => { index = (index - 1 + hits.length) % hits.length; render(); });
     $('next').addEventListener('click', () => { index = (index + 1) % hits.length; render(); });
