@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>제주 축제 · 반응형 메뉴</title>
+  <style>
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+      font-weight: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-6Bold.woff') format('woff');
+      font-weight: 600;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-7ExtraBold.woff') format('woff');
+      font-weight: 700;
+      font-display: swap;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Escoredream', sans-serif;
+      background: #f8f4ee;
+      color: #111111;
+      word-break: keep-all;
+      -webkit-tap-highlight-color: transparent;
+    }
+    :root { --pad: max(24px, calc((100vw - 1100px) / 2)); --bar: 60px; }
+
+    /* ---------- 상단 바 + 메뉴 ---------- */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #f8f4ee;
+      border-bottom: 1px solid #111111;
+    }
+    .bar {
+      height: var(--bar);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--pad);
+    }
+    .logo { font-weight: 700; font-size: 1.05rem; color: #111111; text-decoration: none; }
+
+    .menu { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; }
+    .menu a, .menu button {
+      display: block;
+      padding: 10px 16px;
+      font: inherit;
+      color: #111111;
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      cursor: pointer;
+      opacity: 0.65;
+    }
+    .menu a:hover, .menu button:hover { opacity: 1; border-bottom-color: rgba(17, 17, 17, 0.4); }
+    .menu a.active { opacity: 1; font-weight: 600; border-bottom-color: #fff12e; box-shadow: 0 1px 0 #111111; }
+
+    /* 햄버거 아이콘 (모바일에서만 보임) */
+    .burger {
+      display: none;
+      width: 44px;
+      height: 44px;
+      margin-right: -10px;
+      padding: 0;
+      align-items: center;
+      justify-content: center;
+      color: #111111;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+    }
+    .burger:hover { background: rgba(17, 17, 17, 0.08); }
+    .burger .line { transition: transform 0.25s ease, opacity 0.2s ease; transform-origin: 12px 12px; }
+    .burger[aria-expanded="true"] .l1 { transform: translateY(6px) rotate(45deg); }
+    .burger[aria-expanded="true"] .l2 { opacity: 0; }
+    .burger[aria-expanded="true"] .l3 { transform: translateY(-6px) rotate(-45deg); }
+
+    @media (max-width: 768px) {
+      .burger { display: flex; }
+      .menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: #f8f4ee;
+        border-bottom: 1px solid #111111;
+        max-height: 0;
+        overflow: hidden;
+        visibility: hidden;
+        transition: max-height 0.3s ease, visibility 0.3s;
+      }
+      .menu.open { max-height: 320px; visibility: visible; }
+      .menu li { border-top: 1px solid #111111; }
+      .menu a, .menu button {
+        width: 100%;
+        padding: 16px var(--pad);
+        text-align: left;
+        border-bottom: none;
+        opacity: 1;
+      }
+      .menu a.active { background: #fff12e; box-shadow: none; }
+      .menu a:hover, .menu button:hover { background: rgba(17, 17, 17, 0.06); border-bottom: none; }
+      .menu a.active:hover { background: #fff12e; }
+    }
+
+    /* ---------- 본문 ---------- */
+    section { scroll-margin-top: var(--bar); padding: 48px var(--pad); border-bottom: 1px solid #111111; }
+    h1, h2 { margin: 0 0 12px; font-weight: 700; }
+    h1 { font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.2; }
+    h2 { font-size: 0.95rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    p { margin: 0 0 12px; line-height: 1.6; }
+
+    #home { background: #d9f44a; }
+    .dday { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 20px; margin-top: 24px; }
+    .dday .count { font-size: 2.6rem; font-weight: 700; line-height: 1; }
+    .dday .name { font-weight: 600; font-size: 1.1rem; }
+    .dday .meta { font-size: 0.85rem; flex: 0 0 100%; }
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 18px;
+      font-weight: 600;
+      color: #111111;
+      text-decoration: none;
+      background: #fff12e;
+      border: 1px solid #111111;
+    }
+    .btn:hover { background: #ffe600; }
+
+    #map { background: #8fa5d6; }
+    .places { list-style: none; margin: 16px 0 0; padding: 0; border-top: 1px solid #111111; }
+    .places li { border-bottom: 1px solid #111111; }
+    .places a {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 4px;
+      color: #111111;
+      text-decoration: none;
+      transition: background 0.2s ease, padding 0.2s ease;
+    }
+    .places a:hover, .places a:focus-visible { background: #fff12e; padding-left: 14px; outline: none; }
+    .places .n { font-weight: 600; }
+    .places .p { font-size: 0.85rem; opacity: 0.8; }
+
+    #info { background: #f8f4ee; }
+    #qna { background: #f8f4ee; }
+
+    footer { padding: 20px var(--pad); background: #fff12e; display: flex; justify-content: space-between; gap: 16px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* Q&A 모달 */
+    dialog.qa { padding: 0; width: min(560px, 92vw); height: min(720px, 88vh); border: 1px solid #111111; border-radius: 0; background: #f8f4ee; color: #111111; overflow: hidden; }
+    dialog.qa[open] { display: flex; flex-direction: column; }
+    dialog.qa::backdrop { background: rgba(17, 17, 17, 0.45); }
+    .qa-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 8px 0 16px; border-bottom: 1px solid #111111; background: #fff12e; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+    .qa-close { display: flex; padding: 10px 8px; background: transparent; color: #111111; border: none; cursor: pointer; }
+    .qa-close:hover { background: rgba(17, 17, 17, 0.1); }
+    dialog.qa iframe { flex: 1; width: 100%; border: none; background: #f8f4ee; }
+    @media (max-width: 520px) {
+      dialog.qa { width: 100%; max-width: 100%; height: 100vh; height: 100dvh; max-height: 100dvh; border: none; }
+      section { padding-top: 36px; padding-bottom: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="bar">
+      <a class="logo" href="#home">🍊 Jeju Festival</a>
+
+      <button type="button" class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="menu">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <line class="line l1" x1="4" y1="6" x2="20" y2="6"></line>
+          <line class="line l2" x1="4" y1="12" x2="20" y2="12"></line>
+          <line class="line l3" x1="4" y1="18" x2="20" y2="18"></line>
+        </svg>
+      </button>
+
+      <ul class="menu" id="menu">
+        <li><a href="#home" class="active" data-sec="home">Home</a></li>
+        <li><a href="#map" data-sec="map">지도</a></li>
+        <li><a href="info.html">정보</a></li>
+        <li><button type="button" id="qaOpen" aria-haspopup="dialog">Q&amp;A</button></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section id="home">
+      <h2>Home</h2>
+      <h1>2026 하반기<br>제주 축제 안내</h1>
+      <p>가장 가까운 축제를 확인하고 지도와 정보 페이지에서 일정을 살펴보세요.</p>
+      <div class="dday" id="dday">
+        <span class="count" id="ddayCount"></span>
+        <span class="name" id="ddayName"></span>
+        <span class="meta" id="ddayMeta"></span>
+      </div>
+      <a class="btn" href="info.html">월별 일정 보기 →</a>
+    </section>
+
+    <section id="map">
+      <h2>지도</h2>
+      <p>축제 장소를 눌러 네이버 지도에서 위치를 확인하세요.</p>
+      <ul class="places" id="places"></ul>
+    </section>
+
+    <section id="info">
+      <h2>정보</h2>
+      <p>월별 캘린더와 전체 축제 일정은 정보 페이지에서 볼 수 있어요.</p>
+      <a class="btn" href="info.html">정보 페이지로 이동 →</a>
+    </section>
+
+    <section id="qna">
+      <h2>Q&amp;A</h2>
+      <p>궁금한 점은 에이전트에게 물어보세요.</p>
+      <button type="button" class="btn" id="qaOpen2" style="font:inherit;font-weight:600;cursor:pointer">에이전트 채팅 열기</button>
+    </section>
+  </main>
+
+  <footer><span>© 2026 Jihyunkoh</span><span>#JejuFestival</span></footer>
+
+  <dialog class="qa" id="qa" aria-label="Q&A 에이전트 채팅">
+    <div class="qa-bar">
+      <span>Q&amp;A · Agent</span>
+      <button type="button" class="qa-close" id="qaClose" aria-label="닫기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <line x1="5" y1="5" x2="19" y2="19"></line>
+          <line x1="19" y1="5" x2="5" y2="19"></line>
+        </svg>
+      </button>
+    </div>
+    <iframe id="qaFrame" title="제주 축제 에이전트 채팅"></iframe>
+  </dialog>
+
+  <script src="festivals.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // ---- 햄버거 메뉴 (768px 이하) ----
+    const burger = $('burger'), menu = $('menu');
+    function setMenu(open) {
+      menu.classList.toggle('open', open);
+      burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    }
+    burger.addEventListener('click', () => setMenu(!menu.classList.contains('open')));
+    menu.addEventListener('click', (e) => { if (e.target.closest('a, button')) setMenu(false); });   // 항목을 누르면 닫기
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.topbar')) setMenu(false); });  // 바깥 클릭 시 닫기
+    window.matchMedia('(min-width: 769px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+
+    // ---- 스크롤 위치에 맞춰 Home/지도 메뉴 강조 ----
+    const secLinks = [...document.querySelectorAll('.menu a[data-sec]')];
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        secLinks.forEach((a) => a.classList.toggle('active', a.dataset.sec === en.target.id));
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    ['home', 'map'].forEach((id) => spy.observe($(id)));
+
+    // ---- Q&A 모달 ----
+    const qa = $('qa');
+    function openQa() {
+      if (!$('qaFrame').getAttribute('src')) $('qaFrame').setAttribute('src', 'agent.html');
+      qa.showModal();
+    }
+    $('qaOpen').addEventListener('click', openQa);
+    $('qaOpen2').addEventListener('click', openQa);
+    $('qaClose').addEventListener('click', () => qa.close());
+    qa.addEventListener('click', (e) => { if (e.target === qa) qa.close(); });
+
+    // ---- 가장 가까운 축제 D-day ----
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const upcoming = FESTIVALS
+      .filter((f) => !f.tentative && parseDay(f.end) >= today)
+      .sort((a, b) => parseDay(a.start) - parseDay(b.start));
+    const next = upcoming[0];
+    if (next) {
+      const diff = Math.round((parseDay(next.start) - today) / 86400000);
+      $('ddayCount').textContent = diff > 0 ? `D-${diff}` : 'D-DAY';
+      $('ddayName').textContent = next.name;
+      $('ddayMeta').textContent = `${fmtDay(next.start)} – ${fmtDay(next.end)} · ${next.place}` + (diff < 0 ? ' · 진행 중' : '');
+    } else {
+      $('dday').textContent = '예정된 축제가 없습니다.';
+    }
+
+    // ---- 지도: 축제 장소 → 네이버 지도 검색 링크 ----
+    FESTIVALS.filter((f) => !f.tentative && parseDay(f.end) >= today).forEach((f) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = 'https://map.naver.com/p/search/' + encodeURIComponent(f.place);
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      const n = document.createElement('span');
+      n.className = 'n';
+      n.textContent = f.name;
+      const p = document.createElement('span');
+      p.className = 'p';
+      p.textContent = f.place + ' ↗';
+      a.append(n, p);
+      li.append(a);
+      $('places').append(li);
+    });
+  </script>
+</body>
+</html>
