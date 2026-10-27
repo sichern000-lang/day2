@@ -12,14 +12,13 @@
     body {
       font-family: 'Asta Sans', sans-serif;
       margin: 0;
-      padding: 16px;
-      background: #f3ecd9;
+      background: #fcf9ee;
       color: #1f4d3a;
     }
     .page {
-      max-width: 720px;
-      margin: 0 auto;
+      min-height: 100vh;
       display: grid;
+      grid-template-rows: auto auto auto auto 1fr auto;
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "header  header"
@@ -30,10 +29,9 @@
         "footer  footer";
       gap: 1px;
       background: #1f4d3a;          /* 칸 사이의 1px 틈이 격자선이 됩니다 */
-      border: 1px solid #1f4d3a;
     }
     .page > * {
-      background: #f8f3e4;
+      background: #fcf9ee;
       color: #1f4d3a;
       border-radius: 0;
       padding: 16px 20px;
@@ -56,7 +54,7 @@
       display: flex;
       gap: 8px;
       padding: 0 20px;
-      background: #f8f3e4;
+      background: #fcf9ee;
     }
     nav a {
       flex: 1;
@@ -72,7 +70,7 @@
 
     section { grid-area: section; }
     article { grid-area: article; }
-    .page > aside { grid-area: aside; background: #ece3cb; }
+    .page > aside { grid-area: aside; background: #f5efdc; }
     .page > .images { grid-area: images; }
     .page > footer { grid-area: footer; text-align: center; font-size: 0.85rem; background: #1f4d3a; color: #f3ecd9; }
 
@@ -124,28 +122,35 @@
       border: 1px solid #1f4d3a;
     }
     .chips button:hover, .chips button.on { background: #1f4d3a; color: #f3ecd9; }
-    #msg { min-height: 1.4em; color: #a33a2a; font-size: 0.9rem; }
-    .slider {
-      position: relative;
-      background: #000;
-      border: 1px solid #1f4d3a;
-      border-radius: 0;
-      overflow: hidden;
+    .viewer { --vis: 4; position: relative; display: none; margin-bottom: 8px; }
+    .viewport { width: 100%; overflow: hidden; border: 1px solid #1f4d3a; }
+    .track { display: flex; transition: transform 0.3s ease; }
+    .track img {
+      flex: 0 0 calc(100% / var(--vis));
+      min-width: 0;
       aspect-ratio: 4 / 3;
-      display: none;
+      object-fit: cover;
+      border-right: 1px solid #1f4d3a;
     }
-    .slider img { width: 100%; height: 100%; object-fit: contain; }
-    .slider .nav-btn {
+    /* 이미지 위에 떠 있는 라인 아이콘 화살표 (테두리·배경 없음) */
+    .ghost {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(31, 77, 58, 0.85);
-      color: #f3ecd9;
-      padding: 10px 14px;
+      z-index: 1;
+      padding: 8px 4px;
+      display: flex;
+      background: transparent;
+      color: #f8f3e4;
+      border: none;
+      filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
     }
-    .slider .nav-btn:hover { background: #1f4d3a; }
-    #prev { left: 8px; }
-    #next { right: 8px; }
+    #prev { left: 6px; }
+    #next { right: 6px; }
+    .ghost:hover { background: transparent; opacity: 0.8; }
+    .ghost:disabled { background: transparent; opacity: 0; pointer-events: none; }
+    @media (max-width: 520px) { .viewer { --vis: 2; } }
+    #msg { min-height: 1.4em; color: #a33a2a; font-size: 0.9rem; }
     .info { display: none; margin-top: 8px; text-align: center; font-size: 0.9rem; }
     .info .row { justify-content: center; margin-top: 8px; }
     .credit { margin: 8px 0 0; font-size: 0.8rem; opacity: 0.8; text-align: center; }
@@ -155,6 +160,7 @@
       .page {
         grid-template-columns: 1fr;
         grid-template-areas: "header" "nav" "section" "article" "aside" "images" "footer";
+        grid-template-rows: auto auto auto auto auto 1fr auto;
       }
     }
   </style>
@@ -213,18 +219,14 @@
       <div class="chips" id="chips" aria-label="추천 검색어"></div>
       <div id="msg"></div>
 
-      <div class="slider" id="slider">
-        <img id="photo" alt="">
-        <button class="nav-btn" id="prev" aria-label="이전">◀</button>
-        <button class="nav-btn" id="next" aria-label="다음">▶</button>
+      <div class="viewer" id="viewer">
+        <button class="ghost" id="prev" aria-label="이전"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg></button>
+        <div class="viewport"><div class="track" id="track"></div></div>
+        <button class="ghost" id="next" aria-label="다음"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 5 16 12 9 19"></polyline></svg></button>
       </div>
 
       <div class="info" id="info">
         <div id="counter"></div>
-        <div class="row">
-          <button id="prevPage">◀ 이전 10개</button>
-          <button id="nextPage">다음 10개 ▶</button>
-        </div>
       </div>
       <p class="credit">Images from <a href="https://pixabay.com" target="_blank" rel="noopener">Pixabay</a></p>
     </div>
@@ -235,47 +237,67 @@
   <script>
     const $ = (id) => document.getElementById(id);
 
-    let hits = [];
-    let index = 0;
-    let page = 1;
-    let totalPages = 1;
-    let lastQuery = '';
+    let hits = [];     // 현재 보여주는 이미지 목록
+    let offset = 0;    // 슬라이드 위치 (맨 앞에 보이는 이미지 번호)
+    let searchMode = false;
+
+    function vis() {
+      return parseInt(getComputedStyle($('viewer')).getPropertyValue('--vis'), 10) || 4;
+    }
 
     // API 키는 서버(Vercel 환경변수)에만 있고, 브라우저는 /api/pixabay 만 호출합니다.
-    async function load(q, p) {
+    async function fetchImages(q, p) {
+      const res = await fetch('/api/pixabay?' + new URLSearchParams({ q, page: p }));
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '요청 실패 (' + res.status + ')');
+      return data;
+    }
+
+    function setImages(list) {
+      hits = list;
+      offset = 0;
+      $('track').replaceChildren(...list.map((h) => {
+        const img = document.createElement('img');
+        img.src = h.url;
+        img.alt = h.tags;
+        return img;
+      }));
+      $('viewer').style.display = 'flex';
+      render();
+    }
+
+    function render() {
+      const v = vis();
+      const max = Math.max(0, hits.length - v);
+      offset = Math.min(offset, max);
+      $('track').style.transform = `translateX(-${offset * (100 / v)}%)`;
+      $('prev').disabled = offset <= 0;
+      $('next').disabled = offset >= max;
+
+      $('info').style.display = searchMode ? 'block' : 'none';
+      if (searchMode) {
+        const last = Math.min(offset + v, hits.length);
+        $('counter').textContent =
+          `${offset + 1}–${last} / ${hits.length}`;
+      }
+    }
+
+    // 검색: 결과를 갤러리로 보여주고 좌우로 슬라이드합니다
+    async function load(q) {
       if (!q) { $('msg').textContent = '검색어를 입력하세요.'; return; }
       $('msg').textContent = '불러오는 중...';
       try {
-        const res = await fetch('/api/pixabay?' + new URLSearchParams({ q, page: p }));
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || '요청 실패 (' + res.status + ')');
+        const data = await fetchImages(q, 1);
         if (!data.hits.length) { $('msg').textContent = '검색 결과가 없습니다.'; return; }
-
-        hits = data.hits;
-        index = 0;
-        page = p;
-        lastQuery = q;
-        totalPages = Math.max(1, Math.ceil(Math.min(data.totalHits, 500) / 10));
+        searchMode = true;
         $('msg').textContent = '';
-        render();
+        setImages(data.hits);
       } catch (err) {
         $('msg').textContent = err.message;
       }
     }
 
-    function render() {
-      const h = hits[index];
-      $('photo').src = h.url;
-      $('photo').alt = h.tags;
-      $('slider').style.display = 'block';
-      $('info').style.display = 'block';
-      $('counter').textContent =
-        `${index + 1} / ${hits.length}  ·  페이지 ${page} / ${totalPages}  ·  ${h.tags}`;
-      $('prevPage').disabled = page <= 1;
-      $('nextPage').disabled = page >= totalPages;
-    }
-
-    // 추천 검색어: 누르면 해당 이미지가 바로 나옵니다. 페이지를 열면 첫 번째가 자동으로 표시됩니다.
+    // 추천: 제주 축제 관련 이미지 4장을 갤러리로 보여줍니다
     const RECOMMENDED = [
       { label: '제주 축제', q: 'jeju festival' },
       { label: '유채꽃', q: 'jeju canola flower' },
@@ -286,32 +308,39 @@
       { label: '불꽃놀이', q: 'fireworks festival' }
     ];
 
-    function pick(item) {
-      $('query').value = item.label;
+    async function showRecommended(item) {
       document.querySelectorAll('#chips button').forEach((b) => {
         b.classList.toggle('on', b.textContent === item.label);
       });
-      load(item.q, 1);
+      $('msg').textContent = '불러오는 중...';
+      try {
+        const data = await fetchImages(item.q, 1);
+        if (!data.hits.length) { $('msg').textContent = '추천 이미지가 없습니다.'; return; }
+        searchMode = false;
+        $('msg').textContent = '';
+        setImages(data.hits.slice(0, 4));
+      } catch (err) {
+        $('msg').textContent = err.message;
+      }
     }
 
     RECOMMENDED.forEach((item) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.textContent = item.label;
-      b.addEventListener('click', () => pick(item));
+      b.addEventListener('click', () => showRecommended(item));
       $('chips').appendChild(b);
     });
-    pick(RECOMMENDED[0]);
+    showRecommended(RECOMMENDED[0]);
 
     $('search').addEventListener('click', () => {
       document.querySelectorAll('#chips button').forEach((b) => b.classList.remove('on'));
-      load($('query').value.trim(), 1);
+      load($('query').value.trim());
     });
     $('query').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('search').click(); });
-    $('prev').addEventListener('click', () => { index = (index - 1 + hits.length) % hits.length; render(); });
-    $('next').addEventListener('click', () => { index = (index + 1) % hits.length; render(); });
-    $('prevPage').addEventListener('click', () => load(lastQuery, page - 1));
-    $('nextPage').addEventListener('click', () => load(lastQuery, page + 1));
+    $('prev').addEventListener('click', () => { offset -= 1; render(); });
+    $('next').addEventListener('click', () => { offset += 1; render(); });
+    window.addEventListener('resize', render);
   </script>
 </body>
 </html>
