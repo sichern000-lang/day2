@@ -122,6 +122,20 @@
       text-decoration: none;
       border-bottom: 3px solid transparent;
     }
+    /* Q&A: 다른 메뉴와 같은 고스트 버튼 모양, 누르면 에이전트 채팅이 모달로 열립니다 */
+    nav .qa-open {
+      flex: 1;
+      padding: 10px 0;
+      font: inherit;
+      color: #111111;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      opacity: 0.6;
+      cursor: pointer;
+    }
+    nav .qa-open:hover { opacity: 1; background: transparent; border-bottom-color: rgba(17, 17, 17, 0.4); }
     nav a:hover { opacity: 1; border-bottom-color: rgba(17, 17, 17, 0.4); }
     nav a.active { opacity: 1; font-weight: 600; border-bottom-color: #fff12e; box-shadow: 0 1px 0 #111111; }
 
@@ -235,6 +249,39 @@
     #next { right: 6px; }
     .ghost:hover { background: transparent; opacity: 0.8; }
     .ghost:disabled { background: transparent; opacity: 0; pointer-events: none; }
+    /* Q&A 모달 */
+    dialog.qa {
+      padding: 0;
+      width: min(560px, 92vw);
+      height: min(720px, 88vh);
+      border: 1px solid #111111;
+      border-radius: 0;
+      background: #f8f4ee;
+      color: #111111;
+      overflow: hidden;
+    }
+    dialog.qa[open] { display: flex; flex-direction: column; }
+    dialog.qa::backdrop { background: rgba(17, 17, 17, 0.45); }
+    .qa-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px 0 16px;
+      border-bottom: 1px solid #111111;
+      background: #fff12e;
+    }
+    .qa-bar .label { margin: 0; }
+    .qa-close {
+      display: flex;
+      padding: 10px 8px;
+      background: transparent;
+      color: #111111;
+      border: none;
+      cursor: pointer;
+    }
+    .qa-close:hover { background: rgba(17, 17, 17, 0.1); }
+    dialog.qa iframe { flex: 1; width: 100%; border: none; background: #f8f4ee; }
+
     @media (max-width: 520px) { .viewer { --vis: 2; } .page { --pad: 24px; } .page > section, .page > article, .page > aside { padding-left: 24px; padding-right: 24px; } }
     #msg { min-height: 1.4em; color: #c0392b; font-size: 0.9rem; }
     .info { display: none; margin-top: 8px; text-align: center; font-size: 0.9rem; }
@@ -265,6 +312,7 @@
       <a href="#" class="active">메인</a>
       <a href="#">축제</a>
       <a href="#">정보</a>
+      <button type="button" class="qa-open" id="qaOpen" aria-haspopup="dialog">Q&amp;A</button>
     </nav>
 
     <div class="dday" id="dday" aria-live="polite">
@@ -334,11 +382,33 @@
       <p class="credit">Images from <a href="https://pixabay.com" target="_blank" rel="noopener">Pixabay</a></p>
     </div>
 
+    <dialog class="qa" id="qa" aria-label="Q&A 에이전트 채팅">
+      <div class="qa-bar">
+        <span class="label">Q&amp;A · Agent</span>
+        <button type="button" class="qa-close" id="qaClose" aria-label="닫기">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line x1="5" y1="5" x2="19" y2="19"></line>
+            <line x1="19" y1="5" x2="5" y2="19"></line>
+          </svg>
+        </button>
+      </div>
+      <iframe id="qaFrame" title="제주 축제 에이전트 채팅"></iframe>
+    </dialog>
+
     <footer><span>© 2026 Jihyunkoh</span><span>#JejuFestival</span></footer>
   </div>
 
   <script>
     const $ = (id) => document.getElementById(id);
+
+    // Q&A 버튼 → agent.html 채팅을 모달로 엽니다 (처음 열 때 한 번만 불러옴)
+    const qa = $('qa');
+    $('qaOpen').addEventListener('click', () => {
+      if (!$('qaFrame').getAttribute('src')) $('qaFrame').setAttribute('src', 'agent.html');
+      qa.showModal();
+    });
+    $('qaClose').addEventListener('click', () => qa.close());
+    qa.addEventListener('click', (e) => { if (e.target === qa) qa.close(); });  // 바깥(배경) 클릭 시 닫기
 
     let hits = [];     // 현재 보여주는 이미지 목록
     let offset = 0;    // 슬라이드 위치 (맨 앞에 보이는 이미지 번호)

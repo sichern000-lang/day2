@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>제주 축제 에이전트</title>
+  <style>
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+      font-weight: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-6Bold.woff') format('woff');
+      font-weight: 600;
+      font-display: swap;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Escoredream', sans-serif;
+      background: #f8f4ee;
+      color: #111111;
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #111111;
+    }
+    header h1 { margin: 0; font-size: 1.2rem; font-weight: 600; }
+    header p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.8; }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px 24px;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .msg {
+      max-width: 78%;
+      padding: 10px 14px;
+      line-height: 1.5;
+      border: 1px solid #111111;
+      border-radius: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .msg.me { align-self: flex-end; background: #fff12e; }
+    .msg.bot { align-self: flex-start; background: #c5d2f0; }
+
+    .dock { border-top: 1px solid #111111; }
+    .suggest {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 24px 0;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .suggest button {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: normal;
+      background: transparent;
+    }
+    .suggest button:hover { background: #fff12e; }
+
+    .typing { display: flex; gap: 5px; align-items: center; padding: 14px 16px; }
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #111111;
+      animation: blink 1s infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.15s; }
+    .typing span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+    form {
+      display: flex;
+      gap: 8px;
+      padding: 10px 24px 12px;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .field { position: relative; flex: 1; min-width: 0; }
+    input {
+      width: 100%;
+      padding: 10px 48px 10px 10px;
+      font: inherit;
+      border: 1px solid #111111;
+      border-radius: 0;
+      background: #fffcf6;
+      color: #111111;
+    }
+    button {
+      padding: 10px 18px;
+      font: inherit;
+      font-weight: 600;
+      border: 1px solid #111111;
+      border-radius: 0;
+      background: #fff12e;
+      color: #111111;
+      cursor: pointer;
+    }
+    button:hover { background: #ffe600; }
+    button:disabled { opacity: 0.4; cursor: default; }
+    .icon-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      border: none;
+      background: transparent;
+      color: #111111;
+    }
+    .icon-btn:hover { background: rgba(17, 17, 17, 0.08); }
+    .icon-btn:disabled:hover { background: transparent; }
+
+    .note {
+      padding: 8px 24px 12px;
+      text-align: center;
+      font-size: 0.72rem;
+      opacity: 0.65;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🍊 제주 축제 에이전트</h1>
+    <p>2026년 하반기 제주 축제를 알려드려요</p>
+  </header>
+
+  <div id="chat" aria-live="polite"></div>
+
+  <div class="dock">
+    <div class="suggest" id="suggest" aria-label="추천 질문"></div>
+
+    <form id="form">
+      <div class="field">
+        <input id="input" type="text" placeholder="메시지를 입력하세요" autocomplete="off">
+        <button id="send" class="icon-btn" type="submit" aria-label="보내기" disabled>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 3 10 14"></path>
+            <path d="M21 3 14.5 21l-4.5-7-7-4.5L21 3z"></path>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="note">※ 지금 나오는 답변은 연습용 가짜 답변입니다.</div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+
+    // 가짜 답변 3개를 차례로 돌려 씁니다
+    const REPLIES = [
+      '안녕하세요! 2026년 하반기 제주 축제를 알려드리는 에이전트예요 🍊\n어느 지역이나 어떤 분위기의 축제가 궁금하세요? (예: 제주시에서 열리는 축제, 사람이 많이 오는 축제, 제주만의 특색이 담긴 축제)',
+      '그렇다면 제주감귤박람회를 추천해요 🍊\n11월 19일~23일, 서귀포농업기술센터에서 열리고 감귤 체험과 먹거리를 함께 즐길 수 있어요.',
+      '아직 공부 중이에요! 5일차에 진짜로 알아볼게요.'
+    ];
+    let turn = 0;
+
+    // IP 메모의 '사용자가 물어볼 질문 예시' 3개
+    const SUGGESTED = [
+      '제주시에서 열리는 축제',
+      '사람이 많이 오는 축제',
+      '제주만의 특성이 잘 담긴 축제'
+    ];
+
+    function scrollToBottom() {
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addMessage(text, who) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + who;
+      div.textContent = text;
+      chat.appendChild(div);
+      scrollToBottom();
+      return div;
+    }
+
+    // 답이 나오기 전 1초 동안 '생각 중…' 점 세 개
+    function addTyping() {
+      const div = document.createElement('div');
+      div.className = 'msg bot typing';
+      div.setAttribute('aria-label', '생각 중…');
+      div.innerHTML = '<span></span><span></span><span></span>';
+      chat.appendChild(div);
+      scrollToBottom();
+      return div;
+    }
+
+    function send(raw) {
+      const text = raw.trim();
+      if (!text) return;               // 빈칸은 보내지 않음
+
+      addMessage(text, 'me');
+
+      const reply = REPLIES[turn % REPLIES.length];
+      turn += 1;
+      const typing = addTyping();
+      setTimeout(() => {
+        typing.remove();
+        addMessage(reply, 'bot');
+      }, 1000);
+    }
+
+    function updateSendState() {
+      $send.disabled = !input.value.trim();
+    }
+
+    const $send = document.getElementById('send');
+    input.addEventListener('input', updateSendState);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      send(input.value);
+      input.value = '';
+      updateSendState();
+    });
+
+    SUGGESTED.forEach((q) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = q;
+      btn.addEventListener('click', () => send(q));
+      document.getElementById('suggest').appendChild(btn);
+    });
+
+    input.focus();
+  </script>
+</body>
+</html>
