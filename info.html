@@ -200,7 +200,6 @@
       .page > nav { padding-top: 0; padding-bottom: 0; }
       h1 { font-size: 1.3rem; }
       header p { font-size: 0.8rem; }
-      nav a, nav .qa-open { padding: 14px 0; font-size: 0.95rem; }
       .cbar { padding: 0 12px; }
       .cslide { padding-top: 4px; }
       .months-nav { gap: 6px; }
@@ -213,6 +212,48 @@
       dialog.qa { width: 100%; max-width: 100%; height: 100vh; height: 100dvh; max-height: 100dvh; border: none; }
       .qa-close { padding: 14px 12px; }
     }
+
+    /* 햄버거 아이콘 (768px 이하에서만 보임) */
+    .hright { display: flex; align-items: center; gap: 12px; }
+    .burger {
+      display: none;
+      width: 44px;
+      height: 44px;
+      margin: -10px -10px -10px 0;
+      padding: 0;
+      align-items: center;
+      justify-content: center;
+      color: #111111;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+    }
+    .burger:hover { background: rgba(17, 17, 17, 0.08); }
+    .burger .line { transition: transform 0.25s ease, opacity 0.2s ease; transform-origin: 12px 12px; }
+    .burger[aria-expanded="true"] .l1 { transform: translateY(6px) rotate(45deg); }
+    .burger[aria-expanded="true"] .l2 { opacity: 0; }
+    .burger[aria-expanded="true"] .l3 { transform: translateY(-6px) rotate(-45deg); }
+
+    /* 모바일 메뉴: 햄버거를 열 때만 메뉴가 펼쳐집니다 */
+    @media (max-width: 768px) {
+      .burger { display: flex; }
+      .page > nav { display: none; flex-direction: column; gap: 0; padding: 0; }
+      .page.nav-open > nav { display: flex; }
+      nav a, nav .qa-open {
+        flex: none;
+        width: 100%;
+        padding: 16px var(--pad);
+        font-size: 0.95rem;
+        text-align: left;
+        opacity: 1;
+        border-bottom: none;
+        border-top: 1px solid #111111;
+      }
+      nav a:first-child { border-top: none; }
+      nav a:hover, nav .qa-open:hover { background: rgba(17, 17, 17, 0.06); border-bottom-color: transparent; }
+      nav a.active, nav a.active:hover { background: #fff12e; box-shadow: none; }
+    }
   </style>
 </head>
 <body>
@@ -222,10 +263,19 @@
         <h1>🍊 제주 축제 정보</h1>
         <p>2026년 하반기 월별 캘린더와 축제 일정</p>
       </div>
-      <span class="label">2026 H2</span>
+      <div class="hright">
+        <span class="label">2026 H2</span>
+        <button type="button" class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="siteNav">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line class="line l1" x1="4" y1="6" x2="20" y2="6"></line>
+            <line class="line l2" x1="4" y1="12" x2="20" y2="12"></line>
+            <line class="line l3" x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+      </div>
     </header>
 
-    <nav>
+    <nav id="siteNav">
       <a href="index.html">메인</a>
       <a href="info.html" class="active">정보</a>
       <button type="button" class="qa-open" id="qaOpen" aria-haspopup="dialog">Q&amp;A</button>
@@ -274,6 +324,19 @@
   <script src="festivals.js"></script>
   <script>
     const $ = (id) => document.getElementById(id);
+
+    // ---- 햄버거 메뉴 (768px 이하) ----
+    const burger = $('burger'), sitePage = document.querySelector('.page');
+    function setMenu(open) {
+      sitePage.classList.toggle('nav-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    }
+    burger.addEventListener('click', () => setMenu(!sitePage.classList.contains('nav-open')));
+    document.querySelector('nav').addEventListener('click', (e) => { if (e.target.closest('a, button')) setMenu(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('header, nav')) setMenu(false); });
+    window.matchMedia('(min-width: 769px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
     const YEAR = 2026;
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
