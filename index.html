@@ -67,6 +67,8 @@
       color: #111111;
     }
     .page {
+      /* 넓은 화면에서는 내용이 가운데 1100px 안에 모이도록 좌우 여백을 늘립니다 (격자선과 배경은 화면 전체) */
+      --pad: max(56px, calc((100vw - 1100px) / 2));
       min-height: 100vh;
       display: grid;
       grid-template-rows: auto auto auto auto auto auto 1fr auto;
@@ -87,7 +89,7 @@
       background: #f8f4ee;
       color: #111111;
       border-radius: 0;
-      padding: 24px 56px;
+      padding: 24px var(--pad);
     }
     h1, h2, h3 { margin: 0 0 8px; font-weight: 600; }
     h1 { font-size: 1.5rem; }
@@ -108,7 +110,7 @@
       grid-area: nav;
       display: flex;
       gap: 8px;
-      padding: 0 56px;
+      padding: 0 var(--pad);
       background: #f8f4ee;
     }
     nav a {
@@ -152,9 +154,9 @@
     .upnext .m { font-size: 0.85rem; opacity: 0.8; }
     .upnext .empty { padding: 8px 0; }
 
-    section { grid-area: section; }
-    article { grid-area: article; }
-    .page > aside { grid-area: aside; background: #8fa5d6; padding-left: 32px; padding-right: 32px; }
+    .page > section { grid-area: section; padding-right: 40px; }
+    .page > article { grid-area: article; padding-right: 40px; }
+    .page > aside { grid-area: aside; background: #8fa5d6; padding-left: 32px; }
     .page > .images { grid-area: images; }
     .page > footer { grid-area: footer; display: flex; justify-content: space-between; gap: 16px; background: #fff12e; color: #111111; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 
@@ -233,7 +235,7 @@
     #next { right: 6px; }
     .ghost:hover { background: transparent; opacity: 0.8; }
     .ghost:disabled { background: transparent; opacity: 0; pointer-events: none; }
-    @media (max-width: 520px) { .viewer { --vis: 2; } .page > * { padding-left: 24px; padding-right: 24px; } .page > nav { padding: 0 24px; } }
+    @media (max-width: 520px) { .viewer { --vis: 2; } .page { --pad: 24px; } .page > section, .page > article, .page > aside { padding-left: 24px; padding-right: 24px; } }
     #msg { min-height: 1.4em; color: #c0392b; font-size: 0.9rem; }
     .info { display: none; margin-top: 8px; text-align: center; font-size: 0.9rem; }
     .info .row { justify-content: center; margin-top: 8px; }
