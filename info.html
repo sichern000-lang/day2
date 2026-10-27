@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>제주 축제 정보</title>
+  <style>
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff') format('woff');
+      font-weight: 300;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+      font-weight: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-6Bold.woff') format('woff');
+      font-weight: 600;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Escoredream';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-7ExtraBold.woff') format('woff');
+      font-weight: 700;
+      font-display: swap;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Escoredream', sans-serif;
+      background: #f8f4ee;
+      color: #111111;
+      word-break: keep-all;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .page {
+      --pad: max(56px, calc((100vw - 1100px) / 2));
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: #111111;          /* 칸 사이의 1px 틈이 격자선이 됩니다 */
+    }
+    .page > * { background: #f8f4ee; padding: 24px var(--pad); min-width: 0; }
+    h1, h2, h3 { margin: 0 0 8px; font-weight: 600; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 0.95rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    p { margin: 0 0 8px; }
+    .label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+
+    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    header p { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+
+    /* 메뉴: 하단바가 있는 고스트 버튼 */
+    .page > nav { display: flex; gap: 8px; padding-top: 0; padding-bottom: 0; }
+    nav a, nav .qa-open {
+      flex: 1;
+      padding: 10px 0;
+      text-align: center;
+      font: inherit;
+      color: #111111;
+      opacity: 0.6;
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      cursor: pointer;
+    }
+    nav a:hover, nav .qa-open:hover { opacity: 1; border-bottom-color: rgba(17, 17, 17, 0.4); }
+    nav a.active { opacity: 1; font-weight: 600; border-bottom-color: #fff12e; box-shadow: 0 1px 0 #111111; }
+
+    /* 월 바로가기 */
+    .months-nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    .months-nav .label { margin-right: 8px; }
+    .months-nav button {
+      padding: 6px 12px;
+      font: inherit;
+      font-size: 0.85rem;
+      color: #111111;
+      background: transparent;
+      border: 1px solid #111111;
+      border-radius: 0;
+      cursor: pointer;
+    }
+    .months-nav button:hover, .months-nav button.on { background: #fff12e; }
+    .months-nav button.now::after { content: ' •'; }
+    .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.8rem; }
+    .legend i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; border: 1px solid #111111; }
+    .legend .l-on { background: #fff12e; }
+    .legend .l-past { background: #e4dfc0; }
+    .legend .l-today { background: transparent; outline: 2px solid #111111; outline-offset: 1px; }
+
+    /* 월별 캐러셀: 한 번에 한 달만 보이고 좌우로 슬라이드 */
+    .carousel { padding-left: 0 !important; padding-right: 0 !important; }
+    .cbar { display: flex; align-items: center; justify-content: space-between; padding: 0 calc(var(--pad) - 12px); margin-bottom: 8px; }
+    .cbar h2 { margin: 0; font-size: 1.1rem; }
+    .cbar h2 .now-tag { margin-left: 8px; padding: 2px 8px; font-size: 0.7rem; background: #fff12e; border: 1px solid #111111; }
+    .ghost { display: flex; padding: 10px 12px; color: #111111; background: transparent; border: none; border-radius: 0; cursor: pointer; }
+    .ghost:hover { background: rgba(17, 17, 17, 0.08); }
+    .ghost:disabled { opacity: 0.2; cursor: default; background: transparent; }
+    .cview { overflow: hidden; transition: height 0.25s ease; touch-action: pan-y; }
+    .ctrack { display: flex; align-items: flex-start; transition: transform 0.35s ease; }
+    .cslide { flex: 0 0 100%; min-width: 0; padding: 8px var(--pad) 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; }
+    .cslide h2 { font-size: 1.05rem; }
+
+    .cal { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #111111; border-left: 1px solid #111111; align-self: start; max-width: 420px; }
+    .cal > div { border-right: 1px solid #111111; border-bottom: 1px solid #111111; text-align: center; }
+    .cal .dow { padding: 6px 0; font-size: 0.75rem; font-weight: 600; background: #ece6d8; }
+    .cal .dow.sun, .cal .day.sun { color: #b3402a; }
+    .cal .day { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; position: relative; }
+    .cal .day.blank { background: transparent; }
+    .cal .day.fest { background: #fff12e; font-weight: 600; color: #111111; }
+    .cal .day.fest.past { background: #e4dfc0; color: #111111; font-weight: normal; }
+    .cal .day.today { outline: 2px solid #111111; outline-offset: -3px; font-weight: 700; }
+
+    .list { list-style: none; margin: 0; padding: 0; }
+    .list > li { border-bottom: 1px solid #111111; }
+    .list > li:last-child { border-bottom: none; }
+    /* 한 줄 전체가 호버 대상: 노란 배경 + 링크는 살짝 이동 */
+    .fi { display: flex; align-items: center; gap: 4px; margin: 0 -12px; padding: 0 4px 0 12px; transition: background 0.2s ease; }
+    .fi:hover, .fi:focus-within { background: #fff12e; }
+    .fi a, .fi .nolink {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 12px 0;
+      color: inherit;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+    .fi a:hover, .fi a:focus-visible { transform: translateX(6px); outline: none; }
+    .list .st { flex: 0 0 3.8em; font-weight: 600; font-size: 0.95rem; }
+    .list .st.end { opacity: 0.5; font-weight: normal; }
+    .list .it { flex: 1; min-width: 0; }
+    .list .n { font-weight: 600; }
+    .list .m { font-size: 0.85rem; opacity: 0.8; }
+    .list .go { align-self: center; display: flex; opacity: 0; transform: translateX(-6px); transition: opacity 0.2s ease, transform 0.2s ease; }
+    .fi a:hover .go, .fi a:focus-visible .go { opacity: 1; transform: none; }
+    .list .past .n, .list .past .m { opacity: 0.55; }
+    .fav { display: flex; padding: 10px; background: transparent; border: none; border-radius: 0; color: #111111; cursor: pointer; }
+    .fav svg { fill: none; transition: transform 0.15s ease, fill 0.15s ease; }
+    .fav:hover svg { transform: scale(1.15); }
+    .fav[aria-pressed="true"] svg { fill: #d8452a; stroke: #d8452a; }
+
+    /* 저장한 축제 */
+    .saved h2 { display: flex; align-items: center; gap: 8px; }
+    .saved .count { font-size: 0.75rem; padding: 1px 8px; border: 1px solid #111111; background: #fff12e; }
+    .saved .hint { margin: 0; font-size: 0.85rem; opacity: 0.65; }
+    .cal .day.sv::after { content: ''; position: absolute; bottom: 5px; width: 5px; height: 5px; border-radius: 50%; background: #d8452a; }
+    .empty { font-size: 0.9rem; opacity: 0.6; padding: 12px 0; }
+    .note-text { font-size: 0.8rem; opacity: 0.7; }
+
+    footer { display: flex; justify-content: space-between; gap: 16px; background: #fff12e !important; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* Q&A 모달 */
+    dialog.qa {
+      padding: 0;
+      width: min(560px, 92vw);
+      height: min(720px, 88vh);
+      border: 1px solid #111111;
+      border-radius: 0;
+      background: #f8f4ee;
+      color: #111111;
+      overflow: hidden;
+    }
+    dialog.qa[open] { display: flex; flex-direction: column; }
+    dialog.qa::backdrop { background: rgba(17, 17, 17, 0.45); }
+    .qa-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 8px 0 16px; border-bottom: 1px solid #111111; background: #fff12e; }
+    .qa-bar .label { margin: 0; }
+    .qa-close { display: flex; padding: 10px 8px; background: transparent; color: #111111; border: none; cursor: pointer; }
+    .qa-close:hover { background: rgba(17, 17, 17, 0.1); }
+    dialog.qa iframe { flex: 1; width: 100%; border: none; background: #f8f4ee; }
+
+    /* 모바일 (390px 기준) */
+    @media (max-width: 800px) {
+      .cslide { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    }
+    @media (max-width: 520px) {
+      .page { --pad: 24px; }
+      .page > * { padding-top: 18px; padding-bottom: 18px; }
+      .page > nav { padding-top: 0; padding-bottom: 0; }
+      h1 { font-size: 1.3rem; }
+      header p { font-size: 0.8rem; }
+      nav a, nav .qa-open { padding: 14px 0; font-size: 0.95rem; }
+      .cbar { padding: 0 12px; }
+      .cslide { padding-top: 4px; }
+      .months-nav { gap: 6px; }
+      .months-nav .label { flex: 0 0 100%; margin: 0; }
+      .months-nav button { padding: 8px 12px; }
+      .fi a, .fi .nolink { gap: 12px; }
+      .list .go { opacity: 0.6; transform: none; }
+      .fi a:hover { transform: none; }
+      .fav { padding: 12px; }
+      dialog.qa { width: 100%; max-width: 100%; height: 100vh; height: 100dvh; max-height: 100dvh; border: none; }
+      .qa-close { padding: 14px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>🍊 제주 축제 정보</h1>
+        <p>2026년 하반기 월별 캘린더와 축제 일정</p>
+      </div>
+      <span class="label">2026 H2</span>
+    </header>
+
+    <nav>
+      <a href="index.html">메인</a>
+      <a href="info.html" class="active">정보</a>
+      <button type="button" class="qa-open" id="qaOpen" aria-haspopup="dialog">Q&amp;A</button>
+    </nav>
+
+    <div class="months-nav" id="monthsNav">
+      <span class="label">Jump to</span>
+      <div class="legend" style="margin-left:auto">
+        <span><i class="l-on"></i>축제일</span>
+        <span><i class="l-past"></i>지난 축제</span>
+        <span><i class="l-today"></i>오늘</span>
+      </div>
+    </div>
+
+    <section class="saved" id="saved" aria-label="저장한 축제"></section>
+
+    <section class="carousel" id="carousel" aria-label="월별 캘린더">
+      <div class="cbar">
+        <button type="button" class="ghost" id="cprev" aria-label="이전 달">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg>
+        </button>
+        <h2 id="ctitle" aria-live="polite"></h2>
+        <button type="button" class="ghost" id="cnext" aria-label="다음 달">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 5 16 12 9 19"></polyline></svg>
+        </button>
+      </div>
+      <div class="cview" id="cview"><div class="ctrack" id="ctrack"></div></div>
+    </section>
+
+    <footer><span>© 2026 Jihyunkoh</span><span>#JejuFestival</span></footer>
+
+    <dialog class="qa" id="qa" aria-label="Q&A 에이전트 채팅">
+      <div class="qa-bar">
+        <span class="label">Q&amp;A · Agent</span>
+        <button type="button" class="qa-close" id="qaClose" aria-label="닫기">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line x1="5" y1="5" x2="19" y2="19"></line>
+            <line x1="19" y1="5" x2="5" y2="19"></line>
+          </svg>
+        </button>
+      </div>
+      <iframe id="qaFrame" title="제주 축제 에이전트 채팅"></iframe>
+    </dialog>
+  </div>
+
+  <script src="festivals.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const YEAR = 2026;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const key = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    // 축제가 열리는 모든 날짜 (days가 있으면 그 날짜만, 없으면 start~end 전체)
+    function festDays(f) {
+      if (f.days) return f.days;
+      const out = [];
+      for (let d = parseDay(f.start); d <= parseDay(f.end); d.setDate(d.getDate() + 1)) out.push(key(d));
+      return out;
+    }
+
+    function statusOf(f) {
+      if (f.tentative) return { text: '미확정', cls: '' };
+      const s = parseDay(f.start), e = parseDay(f.end);
+      if (e < today) return { text: '종료', cls: 'end' };
+      if (s <= today) return { text: '진행 중', cls: '' };
+      return { text: `D-${Math.round((s - today) / 86400000)}`, cls: '' };
+    }
+
+    // ---- 저장한 축제 (이 브라우저의 localStorage에만 저장됩니다) ----
+    const STORE_KEY = 'jeju-fest-saved';
+    let saved = [];
+    try { saved = JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch (e) { saved = []; }
+    const isSaved = (f) => saved.includes(f.name);
+    function toggleSaved(f) {
+      saved = isSaved(f) ? saved.filter((n) => n !== f.name) : [...saved, f.name];
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch (e) {}
+      renderAll();
+    }
+
+    const HEART = '<svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5S3.5 15 3.5 9A4.6 4.6 0 0 1 12 6.6 4.6 4.6 0 0 1 20.5 9c0 6-8.5 11.5-8.5 11.5z"></path></svg>';
+    const ARROW = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="8 7 17 7 17 16"></polyline></svg>';
+
+    // 목록 한 줄: 행사 페이지 링크 + 저장(하트) 버튼
+    function buildItem(f) {
+      const st = statusOf(f);
+      const li = document.createElement('li');
+      if (st.cls === 'end') li.className = 'past';
+      const row = document.createElement('div');
+      row.className = 'fi';
+
+      const a = document.createElement('a');
+      a.href = eventUrl(f);
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.setAttribute('aria-label', f.name + ' 행사 페이지로 이동 (새 탭)');
+      const s = document.createElement('span');
+      s.className = 'st ' + st.cls;
+      s.textContent = st.text;
+      const it = document.createElement('div');
+      it.className = 'it';
+      const n = document.createElement('div');
+      n.className = 'n';
+      n.textContent = f.name;
+      const m = document.createElement('div');
+      m.className = 'm';
+      m.textContent = f.tentative ? f.note : `${fmtDay(f.start)} – ${fmtDay(f.end)}  ·  ${f.place}`;
+      it.append(n, m);
+      if (f.days) {
+        const d = document.createElement('div');
+        d.className = 'm';
+        d.textContent = '개최일: ' + f.days.map(fmtDay).join(', ');
+        it.append(d);
+      }
+      const go = document.createElement('span');
+      go.className = 'go';
+      go.innerHTML = ARROW;
+      a.append(s, it, go);
+
+      const fav = document.createElement('button');
+      fav.type = 'button';
+      fav.className = 'fav';
+      fav.innerHTML = HEART;
+      fav.setAttribute('aria-pressed', String(isSaved(f)));
+      fav.setAttribute('aria-label', f.name + (isSaved(f) ? ' 저장 해제' : ' 저장'));
+      fav.addEventListener('click', () => toggleSaved(f));
+
+      row.append(a, fav);
+      li.append(row);
+      return li;
+    }
+
+    function buildCalendar(month) {
+      const cal = document.createElement('div');
+      cal.className = 'cal';
+      ['일', '월', '화', '수', '목', '금', '토'].forEach((w, i) => {
+        const d = document.createElement('div');
+        d.className = 'dow' + (i === 0 ? ' sun' : '');
+        d.textContent = w;
+        cal.append(d);
+      });
+
+      // 날짜별 축제 (hover/롱프레스 시 title로 이름 표시)
+      const byDay = {};
+      FESTIVALS.forEach((f) => {
+        festDays(f).forEach((k) => { (byDay[k] = byDay[k] || []).push(f); });
+      });
+
+      const first = new Date(YEAR, month - 1, 1);
+      const count = new Date(YEAR, month, 0).getDate();
+      for (let i = 0; i < first.getDay(); i++) {
+        const b = document.createElement('div');
+        b.className = 'day blank';
+        cal.append(b);
+      }
+      for (let day = 1; day <= count; day++) {
+        const date = new Date(YEAR, month - 1, day);
+        const k = key(date);
+        const cell = document.createElement('div');
+        cell.className = 'day' + (date.getDay() === 0 ? ' sun' : '');
+        cell.textContent = day;
+        const fs = (byDay[k] || []).filter((f) => !f.tentative);
+        if (fs.length) {
+          cell.classList.add('fest');
+          if (date < today) cell.classList.add('past');
+          if (fs.some(isSaved)) cell.classList.add('sv');     // 저장한 축제 날짜에는 빨간 점
+          cell.title = fs.map((f) => f.name).join(', ');
+        }
+        if (+date === +today) cell.classList.add('today');
+        cal.append(cell);
+      }
+      return cal;
+    }
+
+    function buildList(month) {
+      const ul = document.createElement('ul');
+      ul.className = 'list';
+      const mStart = new Date(YEAR, month - 1, 1), mEnd = new Date(YEAR, month, 0);
+      const items = FESTIVALS
+        .filter((f) => parseDay(f.start) <= mEnd && parseDay(f.end) >= mStart)
+        .sort((a, b) => parseDay(a.start) - parseDay(b.start));
+
+      if (!items.length) {
+        const li = document.createElement('li');
+        li.innerHTML = '<div class="empty">이 달에 확인된 축제가 없습니다.</div>';
+        ul.append(li);
+        return ul;
+      }
+      items.forEach((f) => ul.append(buildItem(f)));
+      return ul;
+    }
+
+    // 저장한 축제 패널
+    function renderSaved() {
+      const box = $('saved');
+      const list = FESTIVALS.filter(isSaved).sort((a, b) => parseDay(a.start) - parseDay(b.start));
+      box.replaceChildren();
+      const h = document.createElement('h2');
+      h.innerHTML = '♥ Saved <span class="count"></span>';
+      h.querySelector('.count').textContent = list.length;
+      box.append(h);
+      if (!list.length) {
+        const p = document.createElement('p');
+        p.className = 'hint';
+        p.textContent = '축제 옆의 하트(♡)를 눌러 마음에 드는 축제를 저장해 보세요.';
+        box.append(p);
+        return;
+      }
+      const ul = document.createElement('ul');
+      ul.className = 'list';
+      list.forEach((f) => ul.append(buildItem(f)));
+      box.append(ul);
+    }
+
+    // ---- 월별 캐러셀 (7~12월, 한 번에 한 달) ----
+    const MONTHS = [7, 8, 9, 10, 11, 12];
+    const curMonth = today.getFullYear() === YEAR ? today.getMonth() + 1 : 0;
+    let idx = Math.max(0, MONTHS.indexOf(curMonth));
+
+    function renderAll() {
+      renderSaved();
+
+      const track = $('ctrack');
+      track.replaceChildren();
+      MONTHS.forEach((m) => {
+        const slide = document.createElement('div');
+        slide.className = 'cslide';
+        slide.setAttribute('aria-hidden', String(MONTHS[idx] !== m));
+        const left = document.createElement('div');
+        left.append(buildCalendar(m));
+        const right = document.createElement('div');
+        const h = document.createElement('h2');
+        h.textContent = `${m}월 축제`;
+        right.append(h, buildList(m));
+        slide.append(left, right);
+        track.append(slide);
+      });
+
+      // 월 바로가기 버튼
+      const nav = $('monthsNav');
+      nav.querySelectorAll('button').forEach((b) => b.remove());
+      MONTHS.forEach((m, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = `${m}월`;
+        if (i === idx) b.classList.add('on');
+        if (m === curMonth) b.classList.add('now');
+        b.addEventListener('click', () => goTo(i));
+        nav.insertBefore(b, nav.querySelector('.legend'));
+      });
+      goTo(idx, true);
+    }
+
+    function goTo(i, instant) {
+      idx = Math.min(Math.max(i, 0), MONTHS.length - 1);
+      const m = MONTHS[idx];
+      const track = $('ctrack');
+      if (instant) track.style.transition = 'none';
+      track.style.transform = `translateX(-${idx * 100}%)`;
+      if (instant) { track.offsetHeight; track.style.transition = ''; }
+
+      const t = $('ctitle');
+      t.textContent = `${YEAR}.${String(m).padStart(2, '0')}`;
+      if (m === curMonth) {
+        const tag = document.createElement('span');
+        tag.className = 'now-tag';
+        tag.textContent = 'THIS MONTH';
+        t.append(tag);
+      }
+      $('cprev').disabled = idx === 0;
+      $('cnext').disabled = idx === MONTHS.length - 1;
+      document.querySelectorAll('#monthsNav button').forEach((b, k) => b.classList.toggle('on', k === idx));
+      track.querySelectorAll('.cslide').forEach((sl, k) => sl.setAttribute('aria-hidden', String(k !== idx)));
+      fitHeight();
+    }
+
+    // 보이는 달의 높이에 맞춰 영역 높이 조절 (달마다 목록 길이가 달라서)
+    function fitHeight() {
+      const slide = $('ctrack').children[idx];
+      if (slide) $('cview').style.height = slide.offsetHeight + 'px';
+    }
+
+    $('cprev').addEventListener('click', () => goTo(idx - 1));
+    $('cnext').addEventListener('click', () => goTo(idx + 1));
+    window.addEventListener('resize', fitHeight);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHeight);
+
+    // 좌우 스와이프(모바일) + 방향키(데스크탑)
+    let tx = null, ty = null;
+    $('cview').addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+    $('cview').addEventListener('touchend', (e) => {
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+      tx = null;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+      goTo(idx + (dx < 0 ? 1 : -1));
+    });
+    document.addEventListener('keydown', (e) => {
+      if ($('qa').open || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+      if (e.key === 'ArrowLeft') goTo(idx - 1);
+      if (e.key === 'ArrowRight') goTo(idx + 1);
+    });
+
+    renderAll();
+
+    // Q&A 버튼 → agent.html 채팅 모달
+    const qa = $('qa');
+    $('qaOpen').addEventListener('click', () => {
+      if (!$('qaFrame').getAttribute('src')) $('qaFrame').setAttribute('src', 'agent.html');
+      qa.showModal();
+    });
+    $('qaClose').addEventListener('click', () => qa.close());
+    qa.addEventListener('click', (e) => { if (e.target === qa) qa.close(); });
+  </script>
+</body>
+</html>
